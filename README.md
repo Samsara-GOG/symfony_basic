@@ -32,4 +32,4 @@ Projet
 Promo
 - nom (une personnalité)
 - date de début
-- date de fina
+- date de fin
