@@ -1,4 +1,8 @@
 
+.env
+.env.test
+info_user_dbb
+README_livres.md
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
