@@ -15,17 +15,20 @@ class SchoolYearType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('dateStart')
-            ->add('dateEnd')
+            ->add('dateStart', DateType::class, [
+                // 'widget' => 'single_text',
+                // 'format' => 'dd/MM/yyyy',
+                // 'html5' => false,
+            ])
+            ->add('dateEnd', DateType::class, [])
             ->add('users', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => function($user) {
+                'choice_label' => function ($user) {
                     return "{$user->getFirstname()} {$user->getLastname()} ({$user->getId()})";
                 },
                 'multiple' => true,
                 'expanded' => true,
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
@@ -34,7 +37,7 @@ class SchoolYearType extends AbstractType
             'data_class' => SchoolYear::class,
             'attr' => [
                 'novalidate' => 'novalidate',
-            ]
+            ],
         ]);
     }
 }

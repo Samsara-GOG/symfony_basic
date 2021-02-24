@@ -81,8 +81,10 @@ class ProjectController extends AbstractController
     /**
      * @Route("/{id}", name="project_show", methods={"GET"})
      */
-    public function show(Project $project): Response
-    {
+    public function show(Project $project, $foo): Response
+    {   
+        // dump(foo);
+        // exit();
 
         if (!(
             $this->isGranted('ROLE_ADMIN')

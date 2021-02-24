@@ -29,6 +29,27 @@ class AppFixtures extends Fixture
         // créer un générateur de fausses données, localisé pour le français
         $this->faker = \Faker\Factory::create('fr_FR');
 
+        // @todo créer un faux utilisateur sans aucun provilège mais avec l'id 1
+
+        // créer un user ROLE_ADMIN
+        $user = new User();
+        $firstname = 'Foo';
+        $lastname = 'Foo';
+        $email = 'foo.foo@example.com';
+        $roles = ["ROLE_ADMIN"];
+        $password = $this->encoder->encodePassword($user, '123');        
+        $phone = null;
+        $user->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setEmail($email)
+            ->setPhone($phone)
+            ->setRoles($roles)
+            ->setPassword($password);
+        $this->manager->persist($user);
+        $this->manager->flush();
+    
+        // @todo: ajouter un user de chaque rôle avec propriétés déterminés à l'avance
+
         $this->loadUser(60, "ROLE_STUDENT");
         $this->loadUser(5, "ROLE_TEACHER");
         $this->loadUser(15, "ROLE_CLIENT");
@@ -38,6 +59,9 @@ class AppFixtures extends Fixture
         $this->loadSchoolYear(3);
 
         $this->loadUserSchoolYearRelation(3);
+
+        // @todo : ajouter les relations entre student et projects
+        // @todo : ajouter les relations entre clients et projets
 
     }
 
@@ -135,19 +159,30 @@ class AppFixtures extends Fixture
     public function loadUserSchoolYearRelation(int $countSchoolYear): void
     {
         $schoolYearRepository = $this->manager->getRepository(SchoolYear::class);
-
-        $schoolYears = $schoolYearRepository->findAll();
-
         $userRepository = $this->manager->getRepository(User::class);
-        $users = $userRepository->findBy([
-                'roles' => ["ROLE_STUDENT"]
-        ]);
 
-        foreach ($users as $i => $user) {
-            dump($i);
+        $schoolYears = $schoolYearRepository->findAll();    
+
+        // récupération de la liste des students avc la méthode array_filter()
+        // $users = $userRepository->findAll();
+        // $students = array_filter($users, function($user) {
+        //     // Indique si une valeur (aiguille) appartient à un tableau (botte de foin)
+        //     return in_array('ROLE_STUDENT', $user->getRoles());
+        // }); 
+
+        // récupération de la liste des students avec une méthode personnalisée du repository
+
+        // Évalue chaque valeur du tableau array en les passant à la fonction de rappel callback. Si la fonction de rappel callback retourne true, la valeur courante du tableau array est retournée dans le tableau résultant. 
+
+        // récupération de la liste des students avec une méthode personnalisée du repository
+        $students = $userRepository->findByRole('ROLE_STUDENT');
+        
+        foreach ($students as $i => $student) {
             $remainder = $i % $countSchoolYear;
-            $user->setSchoolYear($schoolYears->get($remainder));
+            $student->setSchoolYear($schoolYears[$remainder]);
+            $this->manager->persist($student);
         }
+        $this->manager->flush();
     }
 }
 

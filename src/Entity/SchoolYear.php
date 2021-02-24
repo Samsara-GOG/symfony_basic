@@ -2,13 +2,19 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\SchoolYearRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ApiResource
  * @ORM\Entity(repositoryClass=SchoolYearRepository::class)
+ * @UniqueEntity("name")
+ * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(columns={"name"})})
  */
 class SchoolYear
 {
@@ -25,11 +31,18 @@ class SchoolYear
     private $name;
 
     /**
+     * @Assert\Type("\DateTimeInterface")
+     * @Assert\GreaterThan("-10 years")
+     * @Assert\GreaterThan(
+     *   value = "2010-01-01"
+     * )
      * @ORM\Column(type="date", nullable=true)
      */
     private $dateStart;
 
     /**
+     * @Assert\Type("\DateTimeInterface")
+     * @Assert\GreaterThan("today")
      * @ORM\Column(type="date", nullable=true)
      */
     private $dateEnd;
@@ -41,6 +54,7 @@ class SchoolYear
 
     public function __construct()
     {
+        // $this->dateStart = new \DateTime();
         $this->users = new ArrayCollection();
     }
 
